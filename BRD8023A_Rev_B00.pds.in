@@ -163,7 +163,7 @@ HF_CLK: {
     // XTAL_SHARED to indicate if the crystal is shared with another IC and thus must be kept active during sleep
     XTAL_SHARED : no,
     // XTAL_TEMP_COMP to activate or deactivate the temperature compensation "enabled"/"disabled"
-    XTAL_TEMP_COMP : disabled
+    XTAL_TEMP_COMP : enabled
 },
 
 /***********************/
