@@ -1,23 +1,14 @@
 /*
- * The PDS is used to enter configuration data.
- *
- * This file is a template that shows all elements that exist.
- * Sections PROG_PINS_CFG, HIF_PINS_CFG and HF_CLK contain hardware default values.
- * Please do not use it with real hardware: copy it and update it to fit to your own hardware. 
- *
- * It should then be processed by the pds_compress script to generate the compressed
- * data to be provided either to the Linux driver or to the Full MAC driver.
- *
- * Unneeded sections can be commented (like in ANSI C) or deleted.
+ * PDS (Platform Data Set) defines a board's HW configuration
+ * Refer to https://github.com/SiliconLabs/wfx-pds/blob/master/README.md for details
  */
  
 #include "definitions.in"
 
-
-// Information about this PDS version
+// PDS API version
 HEADER: {
     VERSION_MAJOR: 2,
-    VERSION_MINOR: 3
+    VERSION_MINOR: 4
 },
 
 /**********************/
@@ -169,94 +160,11 @@ HIF_PINS_CFG: {
 /***********************/
 
 HF_CLK: {
-    // XTAL_CFG allows to fine tune XTAL Oscillator frequency
-    /*
-    XTAL_CFG: {
-        // CTUNE_FIX allows to set a high value capacitance on both Xi and Xo. Type: integer between 0 and 3 (default =3)
-        CTUNE_FIX: 3,
-        // CTUNE_XI allows to fine tune the capacitor on pin XTAL_I. Type: integer between 0 and 255 (default = 140)
-        CTUNE_XI: 110,
-        // CTUNE_XO similar to CTUNE_XI for XTAL_O pin
-        CTUNE_XO: 110,
-    },
-    */
     // XTAL_SHARED to indicate if the crystal is shared with another IC and thus must be kept active during sleep
     XTAL_SHARED : no,
     // XTAL_TEMP_COMP to activate or deactivate the temperature compensation "enabled"/"disabled"
     XTAL_TEMP_COMP : disabled
 },
-
-/*********************/
-/* FEM configuration */
-/*********************/
-/*
-FEM_CFG: {    
-    FEM_CTRL_PINS_MATRIX:{
-        //  FEM LUT is split in 4 sections
-        //  A '1' activates a FEM pin at particular moment
-        //  in each section the row index[2-0] bits correspond to the 3 selection input signals coming from the HW:
-        //       index[0]=LNA_enable (currently not used then '0')
-        //       index[1]=Rx_enable
-        //       index[2]=Tx_enable
-        //  pin FEM_4 is not present in theses tables because it is the PA_enable signal
-        //             .-- FEM_6
-        //             | .- FEM_5
-        //             | |.- FEM_3
-        //             | ||.- FEM_2
-        //             | |||.- FEM_1
-        NO_PTA: [ //   | ||||
-                     0b0_0000, // Reserved
-                     0b0_0000, // Reserved
-                     0b0_0000, // Reserved
-                     0b0_0000, // Reserved
-                     0b0_0000, // Reserved
-                     0b0_0000, // Reserved
-                     0b0_0000, // Reserved
-                     0b0_0000  // Reserved
-        ],
-        COEX_EXCLUSIVE: [
-                     0b0_0000, // Coex has priotiry ( Wlan Inactive )
-                     0b0_0000, // Coex has priotiry ( Wlan Inactive )
-                     0b0_0000, // Coex has priotiry ( Wlan RX )
-                     0b0_0000, // Coex has priotiry ( Wlan tbd )
-                     0b0_0000, // Coex has priotiry ( Wlan TX )
-                     0b0_0000, // Coex has priotiry ( Wlan tbd )
-                     0b0_0000, // Reserved
-                     0b0_0000  // Reserved
-        ],
-        WLAN_EXCLUSIVE: [
-                     0b0_0000, // WLAN is inactive, Give Antenna to Coex
-                     0b0_0000, // WLAN is inactive, Give Antenna to Coex
-                     0b0_0000, // WLAN RX
-                     0b0_0000, // WLAN tbd
-                     0b0_0000, // WLAN TX
-                     0b0_0000, // WLAN tbd
-                     0b0_0000, // Reserved
-                     0b0_0000  // Reserved
-        ],
-        COEX_WL_COMBINED: [
-                     0b0_0000, // WLAN is inactive, Give Antenna to Coex
-                     0b0_0000, // WLAN is inactive, Give Antenna to Coex
-                     0b0_0000, // Coex + WLAN RX
-                     0b0_0000, // tbd
-                     0b0_0000, // Coex + WLAN TX
-                     0b0_0000, // tbd
-                     0b0_0000, // Reserved
-                     0b0_0000  // Reserved
-        ]
-    },
-
-    FEM_TIMINGS: {
-        // Delays are in 12.5ns units
-        TX_EN_DELAY:  0,
-        TX_DIS_DELAY: 0,
-        PA_EN_DELAY:  0,
-        PA_DIS_DELAY: 0,
-        RX_EN_DELAY:  0,
-        RX_DIS_DELAY: 0
-    }
-},
-*/
 
 /***********************/
 /* Power configuration */
@@ -346,22 +254,6 @@ RF_ANTENNA_SEL_DIV_CFG: {
     // For the INTERNAL value, RF_PORTS must be set to TX12_RX12
     //
     DIVERSITY: OFF,
-
-    // External switch control antenna
-    /*
-    EXT_SWITCH_CONTROL: {
-        NB_ANTENNA: 3,
-        NB_GPIO: 3,
-        //           .---------- GPIO_ID
-        //          |  .------- State Antenna_1
-        //          |  |  .---- State Antenna_2
-        //          |  |  |  .- State Antenna_3
-        //          |  |  |  |
-        GPIO_ID_1: [A, 1, 0, 0],
-        GPIO_ID_2: [B, 0, 1, 0],
-        GPIO_ID_3: [C, 0, 0, 1]
-    }
-    */
 },
 
 /*********************/
@@ -369,54 +261,48 @@ RF_ANTENNA_SEL_DIV_CFG: {
 /*********************/
 /*
 PTA_CFG: {
-    // PTA Mode selection, enum: EPTA_MODE_NO_BT, EPTA_MODE_PTA_1W_WL_MASTER, EPTA_MODE_PTA_1W_BT_MASTER,
-	// EPTA_MODE_PTA_2W, EPTA_MODE_PTA_3W
-    PTA_MODE: EPTA_MODE_NO_BT,
+    // PACKET TRAFFIC ARBITRATION (PTA) Mode selection
+    // Note: In the whole PTA section, COEX refers to the coexisting standard, sharing the RF with WLAN.
+    // * PTA_NONE:           PTA is deactivated,
+    // * PTA_1W_WLAN_MASTER: PTA 1-wire interface with WLAN master on PTA_TX_CONF pin (GRANT signal),
+    // * PTA_1W_COEX_MASTER: PTA 1-wire interface with COEX master on PTA_RF_ACT pin (REQUEST signal),
+    // * PTA_2W:             PTA 2-wire interface on PTA_RF_ACT and PTA_TX_CONF pins (respectively REQUEST and GRANT signals),
+    // * PTA_3W:             PTA 3-wire interface on same pins as PTA_MODE_2W, plus PTA_STATUS pin (PRIORITY signal).
+    PTA_MODE: PTA_NONE,
 
-    // PTA settings :
-    // setting the EnOverrideBt bit to 1 indicate the BT grant could be broken if WLAN won the arbitration
-    // setting the NoCombine bit to 1 forces EPTA
-    // setting the GrantBt bit to 1 allows BT to override WLAN
-    // setting the GrantWlan bit to 1 allows WLAN to override BT
-    // setting the ProtectWlanRx bit to 1 prevents BT to be granted when WLAN is receiving a response
-    // setting the ProtectWlanTx bit to 1 prevents BT to be granted when WLAN is transmitting
-    // setting the TxConfControl bit to 1 specifies the TX conf value
-    SETTINGS: 0b_0101_0110,
-    //           |||| |||'- EnOverrideBt:1
-    //           |||| ||'-- NoCombine:1
-    //           |||| |'--- GrantBt:1
-    //           |||| '---- GrantWlan:1
-    //           |||'------ ProtectWlanRx:1
-    //           ||'------- ProtectWlanTx:1
-    //           |'-------- TxConfControl:1
-    //           '--------- Reserved:1
+    // Active levels on PTA signals. Use one of the following enumerate values : HIGH or LOW
+    //   REQUEST signal (PTA_RF_ACT pin):  sets active level on REQUEST signal, provided by COEX to request the RF.
+    //   PRIORITY signal (PTA_STATUS pin): sets active level on PRIORITY signal, provided by COEX to set the priority of the request.
+    //   FREQ signal (PTA_FREQ pin):       sets active level on FREQ signal, provided by COEX. Will be used in 4-wire PTA when COEX and WLAN share the same band. Currently forced HIGH.
+    //   GRANT signal (PTA_TX_CONF pin):   sets active level on GRANT signal, generated by PTA to grant the RF to COEX.
+    PTA_REQUEST:  HIGH,
+    PTA_PRIORITY: HIGH,
+    PTA_FREQ:     HIGH,
+    PTA_GRANT:    LOW,
 
-    // PTA invert pin selection
-    // when a bit is set to 1, the pin logic is inverted
-    PIN_INVERT: 0b_0000_0000,
-    //             |||| |||+ invert PTA_RF_ACT  (input)
-    //             |||| ||+  invert PTA_STATUS  (input)
-    //             |||| |+   invert PTA_FREQ    (input)
-    //             |||| +    invert PTA_TX_CONF (input)
-    //             |||+      invert PTA_FREQ    (output)
-    //             ||+       invert PTA_TX_CONF (output)
-    //             ++        Reserved:2
+    // PTA interface timings:
+    //   PRIORITY_SAMPLING_TIME: time (in us) from REQUEST to the sampling of PRIORITY signal to get priority information (1 to 31),
+    //   GRANT_VALID_TIME:       time (in us) from REQUEST to the GRANT signal assertion (1 to 127),
+    // Note: PRIORITY_SAMPLING_TIME < GRANT_VALID_TIME must be true.
+    PRIORITY_SAMPLING_TIME: 10,
+    GRANT_VALID_TIME:       72,
 
-    // TX conf valid time it the time in us from BT_RF_ACTIVE to TX_CONF assertion
-    TX_CONF_TIMING: 0x48,
-    //                ++ TXConfValideTime:7
-    //                +  Reserved:1
+    // PTA arbitration settings:
+    //   when set to ON, PROTECT_WLAN_RX prevents COEX from being granted when WLAN is receiving a response to an already transmitted frame.
+    //   when set to ON, PROTECT_WLAN_TX prevents COEX from being granted when WLAN is transmitting (the protection is also extended to the response).
+    PROTECT_WLAN_RX:  ON,
+    PROTECT_WLAN_TX:  OFF,
 
-    // Priority sampling time is the time in us after BT_RF_ACTIVE when BT_FREQ should be sampled
-    // TX RX sampling time is the time in us from BT_RF_ACTIVE to the sampling if TXRX
-    STATUS_TIMING: 0x3209,
-    //               ||++ PrioritySamplingTime:8
-    //               ++   TxRxSamplingTime:8
+    //   PROTECT_COEX, GRANT_WLAN, GRANT_COEX, NO_COMBINE shall be kept to the default values below:
+    PROTECT_COEX:     ON,
+    GRANT_WLAN:       ON,
+    GRANT_COEX:       ON,
+    NO_COMBINE:       ON,
 
-    // priority matrix given for BT
-    PRIORITY: 0x61
-    //          |+ Priority 0:4
-    //          +  Priority 1:4
-
+    // DEFAULT_GRANT_STATE specifies the state of the GRANT signal before arbitration (GRANT_VALID_TIME). Two enumerate values are possible
+    // * GRANT:   The PTA grants COEX by default
+    // * NOGRANT: COEX is not granted by default
+    DEFAULT_GRANT_STATE: GRANT
 },
+
 */
