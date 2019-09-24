@@ -10,15 +10,44 @@ NB: to make RF testing easier, a set of Python scripts are available in [test-fe
 For easy editing, PDS **node** and **attribute** values are stored in `.pds.in`  files in
 human-readable format, with inline documentation. (Refer to this documentation for
  details on nodes and attributes).
+PDS files can benefit from syntax highlighting (with folding) if edited as C/C++ files.
 
 To save time during execution, `.pds.in` files are compressed using the **pds_compress**
 (_python3 script_) tool to the `.pds` file format.
+
+The PDS flow is:
+* Edit
+    * Copy/paste existing PDS file
+    * `.pds.in` includes ['definitions.in'][1]
+    * Use the inline comments to define
+        * The values to set
+        * The sections to use
+    * Remove unused sections
+    * Add required sections from [the template][4]
+    * Set values (from ['definitions.in'][1]) to match the HW
+* Compress
+    * `.pds.in` translated to `.pds` using ['pds_compress'][2]
+* Send
+    * Startup `.pds` sent at boot (right after FW download & startup) 
+    to set the FW to math the HW (static & default settings)
+    * (optionally) `.pds` sent in runtime (such as for RF testing or PTA control)
 
 ### Compressing PDS files
 Use `pds_compress [options] INPUT [OUTPUT]` to compress a `.pds.in` file to a `.pds` file,
  ready to be sent to the WFX firmware.
 
 The `pds_compress` tool is necessary to execute PDS scripts on the Raspberry Pi, so it's stored under the ['wfx-linux-tools'][2] GitHub repository.
+
+### Silicon Labs PDF files
+PDS files for Silicon Labs evaluation kits are provided in this repository.
+ They can be used as the basis for custom hardware.
+
+### Creating a custom PDS file for new HW
+To create a PDS file for custom HW:
+ * copy/rename one of the existing `.pds.in` files
+ * remove unused sections
+ * add required sections from [the template][4]
+ * adapt the values to match your HW
 
 ### Startup PDS file
 During WFX driver startup, after WFX firmware download, the driver
@@ -250,4 +279,4 @@ The `-c` or `--out=c` formats the PDS data as a PDS_COMPRESS_MSG structure. The 
 [1]: https://github.com/SiliconLabs/wfx-firmware/blob/master/PDS/definitions.in
 [2]: https://github.com/SiliconLabs/wfx-linux-tools/blob/master/pds_compress
 [3]: https://github.com/SiliconLabs/wfx-common-tools/blob/master/test-feature/README.md
-
+[4]: https://github.com/SiliconLabs/wfx-firmware/tree/master/PDS
