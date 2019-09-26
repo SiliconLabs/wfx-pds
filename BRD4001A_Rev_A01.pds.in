@@ -1,20 +1,11 @@
 /*
- * The PDS is used to enter configuration data.
- *
- * This file is a template that shows all elements that exist.
- * Sections PROG_PINS_CFG, HIF_PINS_CFG and HF_CLK contain hardware default values.
- * Please do not use it with real hardware: copy it and update it to fit to your own hardware. 
- *
- * It should then be processed by the pds_compress script to generate the compressed
- * data to be provided either to the Linux driver or to the Full MAC driver.
- *
- * Unneeded sections can be commented (like in ANSI C) or deleted.
+ * PDS (Platform Data Set) defines a board's HW configuration
+ * Refer to https://github.com/SiliconLabs/wfx-pds/blob/master/README.md for details
  */
 
 #include "definitions.in"
 
-
-// Information about this PDS version
+// PDS API version
 HEADER: {
     VERSION_MAJOR: 3,
     VERSION_MINOR: 0
