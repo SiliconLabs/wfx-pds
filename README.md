@@ -38,7 +38,7 @@ Use `pds_compress [options] INPUT [OUTPUT]` to compress a `.pds.in` file to a `.
 
 The `pds_compress` tool is necessary to execute PDS scripts on the Raspberry Pi, so it's stored under the ['wfx-linux-tools'][2] GitHub repository.
 
-### Silicon Labs PDF files
+### Silicon Labs PDS files
 PDS files for Silicon Labs evaluation kits are provided in this repository.
  They can be used as the basis for custom hardware.
 
