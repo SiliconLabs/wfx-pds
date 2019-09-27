@@ -1,0 +1,6 @@
+/*
+ * PDS (Platform Data Set) defines a board's HW configuration
+ * Refer to https://github.com/SiliconLabs/wfx-pds/blob/master/README.md for details
+ */
+
+#include "BRD8023A_Rev_B00.pds.in"
