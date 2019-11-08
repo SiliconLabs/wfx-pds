@@ -7,7 +7,7 @@
 
 // PDS API version
 HEADER: {
-    VERSION_MAJOR: 3,
+    VERSION_MAJOR: 4,
     VERSION_MINOR: 0
 },
 
@@ -15,9 +15,9 @@ HEADER: {
 /* Pins configuration */
 /**********************/
 
-// Pad configuration of programmable pins
+// Configuration of programmable pins
 PROG_PINS_CFG: {
-    // For each PROGrammable pin in this section
+    // For each programmable pin in this section
     // SLEW_RATE sets the maximum slew rate on the pin. Type: integer value between 0 and 6 (6=max drive strength)
     // PULL_UP_DOWN allows to add a pull-up or pull-down on the pad. Type: enum = 'none', 'down', 'up'
     // SLEEP_CFG allows to add a pull-up or pull-down on the pad while in sleep mode. Type: enum = 'none', 'down', 'up', 'maintain'
@@ -117,41 +117,29 @@ PROG_PINS_CFG: {
     }
 },
 
-// Pad configuration of HIF pins
+// Configuration of Host Interface (HIF) pins
 HIF_PINS_CFG: {
     // For each HIF pin in this section
-    // SLEW_RATE sets the maximum slew rate on the pin. Type: integer value between 0 and 6
-    // PULL_UP_DOWN allows to add a pull-up or pull-down on the pad. Type: enum = 'none', 'down', 'up'
-    // SLEEP_CFG allows to add a pull-up or pull-down on the pad while in sleep mode. Type: enum = 'none', 'down', 'up'
+    // SLEW_RATE sets the maximum slew rate on the pin. Type: integer value between 0 and 6 (6=max drive strength)
+    // SLEEP_CFG for SDIO_D0_SPI_MISO allows to add a pull-up or pull-down on the pad while in sleep mode. Type: enum = 'none', 'down', 'up'
     SDIO_CLK_SPI_CLK: {
-        SLEW_RATE: 6,
-        PULL_UP_DOWN: none,
-        SLEEP_CFG: none
+        SLEW_RATE: 4
     },
     SDIO_CMD_SPI_MOSI: {
-        SLEW_RATE: 6,
-        PULL_UP_DOWN: none,
-        SLEEP_CFG: none
+        SLEW_RATE: 6
     },
     SDIO_D0_SPI_MISO: {
         SLEW_RATE: 6,
-        PULL_UP_DOWN: none,
-        SLEEP_CFG: down
+        SLEEP_CFG: none
     },
     SDIO_D1_SPI_WIRQ: {
-        SLEW_RATE: 6,
-        PULL_UP_DOWN: none,
-        SLEEP_CFG: none
+        SLEW_RATE: 6
     },
     SDIO_D2_HIF_SEL: {
-        SLEW_RATE: 6,
-        PULL_UP_DOWN: none,
-        SLEEP_CFG: none
+        SLEW_RATE: 6
     },
     SDIO_D3_SPI_CSN: {
-        SLEW_RATE: 6,
-        PULL_UP_DOWN: none,
-        SLEEP_CFG: none
+        SLEW_RATE: 6
     }
 },
 
@@ -160,10 +148,10 @@ HIF_PINS_CFG: {
 /***********************/
 
 HF_CLK: {
-    // XTAL_SHARED to indicate if the crystal is shared with another IC and thus must be kept active during sleep
-    XTAL_SHARED : no,
-    // XTAL_TEMP_COMP to activate or deactivate the temperature compensation "enabled"/"disabled"
-    XTAL_TEMP_COMP : enabled
+    // XTAL_SHARED indicates if the crystal is shared with another IC and thus must be kept active during sleep. Type: enum = 'no', 'yes'
+    XTAL_SHARED: no,
+    // XTAL_TEMP_COMP activates or deactivates the XTAL temperature compensation. Type: enum = 'enabled', 'disabled'
+    XTAL_TEMP_COMP: enabled
 },
 
 /***********************/
@@ -172,63 +160,68 @@ HF_CLK: {
 
 // Tx power-related information
 RF_POWER_CFG: {
-    // Designate the rf port affected by the following configurations
-    // RF_PORT_1, RF_PORT_2, RF_PORT_BOTH(default)
+    // Designate the RF port affected by the following configurations
+    // Thus it must always be the first element of this section (else it is ignored)
+    // RF_PORT_1, RF_PORT_2, RF_PORT_BOTH (default)
     RF_PORT: RF_PORT_BOTH,
 
-    // The max Tx power value in quarters of dBm. Type: signed integer between -128 and 127
-    // Resultant covered range in dBm: [-32; 31.75]
-    // It is used to limit the Tx power. Thus a value larger than 80 does not make sens.
+    // The max Tx power value in quarters of dBm. Type: signed integer between -128 and 127 (range in dBm: [-32; 31.75])
+    // It is used to limit the Tx power. Thus a value larger than 80 (default) does not make sense.
     MAX_OUTPUT_POWER_QDBM: 80,
 
-// Front-end loss (loss between the chip and the antenna) in quarters of dB.
-    // Type: signed integer between -128 and 127
-    // Resultant covered range in dB: [-32; 31.75]
+    // Front-end loss (loss between the chip and the antenna) in quarters of dB.
+    // Type: signed integer between -128 and 127 (range in dB: [-32; 31.75])
     // This value must be positive when the front end attenuates the signal and negative when it amplifies it.
-    FRONT_END_LOSS_CORRECTION_QDB: 0,
+    // Values on Rx path and Tx path can be different thus 2 values are provided here
+    // Default values are 0 for both
+    FRONT_END_LOSS_TX_QDB: 0,
+    FRONT_END_LOSS_RX_QDB: 0,
 
     // Backoff vs. Modulation Group vs Channel
-    // CHANNEL_NUMBER : Designate a channel number(an integer) or a range of channel numbers (an array)
-    // CHANNEL_NUMBER : [3, 9] : Channels from 3 to 9
+    // CHANNEL_NUMBER: Designate a channel number (an integer) or a range of channel numbers (an array)
+    // e.g. CHANNEL_NUMBER: [3, 9]: Channels from 3 to 9
     //
-    // BACKOFF_VAL is given in quarters of dB. Type : unsigned integer. Covered range in dB: [0; 63.75]
-    // Each value sets a backoff (=additional attenuation) for a group of modulations.
-    // A modulation group designates a subset of modulations :
-    //   *  MOD_GROUP_0 : B_1Mbps, B_2Mbps, B_5.5Mbps, B_11Mbps
-    //   *  MOD_GROUP_1 : G_6Mbps, G_9Mbps, G_12Mbps, N_MCS0,  N_MCS1,
-    //   *  MOD_GROUP_2 : G_18Mbps, G_24Mbps, N_MCS2, N_MCS3,
-    //   *  MOD_GROUP_3 : G_36Mbps, G_48Mbps, N_MCS4, N_MCS5
-    //   *  MOD_GROUP_4 : G_54Mbps, N_MCS6
-    //   *  MOD_GROUP_5 : N_MCS7
-    //   BACKOFF_VAL : [MOD_GROUP_0, ..., MOD_GROUP_5]
+    // Each backoff value sets an attenuation for a group of modulations.
+    // BACKOFF_VAL is given in quarters of dB. Type: unsigned integer. Covered range in dB: [0; 63.75]
+    // A modulation group designates a subset of modulations:
+    //   *  MOD_GROUP_0: B_1Mbps, B_2Mbps, B_5.5Mbps, B_11Mbps
+    //   *  MOD_GROUP_1: G_6Mbps, G_9Mbps, G_12Mbps, N_MCS0,  N_MCS1,
+    //   *  MOD_GROUP_2: G_18Mbps, G_24Mbps, N_MCS2, N_MCS3,
+    //   *  MOD_GROUP_3: G_36Mbps, G_48Mbps, N_MCS4, N_MCS5
+    //   *  MOD_GROUP_4: G_54Mbps, N_MCS6
+    //   *  MOD_GROUP_5: N_MCS7
+    //   BACKOFF_VAL: [MOD_GROUP_0, ..., MOD_GROUP_5]
+    //   Default value: BACKOFF_QDB: [{ CHANNEL_NUMBER: [1,14], BACKOFF_VAL: [0, 0, 0, 0, 0 ,0] } ]
     BACKOFF_QDB: [
         {
-            CHANNEL_NUMBER : 1,
-            BACKOFF_VAL : [0, 0, 0, 0, 0 ,0]
+            CHANNEL_NUMBER: 1,
+            BACKOFF_VAL: [0, 0, 0, 0, 0 ,0]
         },
         {
-            CHANNEL_NUMBER : [2,3],
-            BACKOFF_VAL : [0, 0, 0, 0, 0 ,0]
+            CHANNEL_NUMBER: 2,
+            BACKOFF_VAL: [0, 0, 0, 0, 0 ,0]
         },
         {
-            CHANNEL_NUMBER : [4, 9],
-            BACKOFF_VAL : [0, 0, 0, 0, 0 ,0]
+            CHANNEL_NUMBER: [3, 9],
+            BACKOFF_VAL: [0, 0, 0, 0, 0 ,0]
         },
         {
-            CHANNEL_NUMBER : [10,12],
-            BACKOFF_VAL : [0, 0, 0, 0, 0 ,0]
+            CHANNEL_NUMBER: 10,
+            BACKOFF_VAL: [0, 0, 0, 0, 0 ,0]
         },
         {
-            CHANNEL_NUMBER : 13,
-            BACKOFF_VAL : [0, 0, 0, 0, 0 ,0]
+            CHANNEL_NUMBER: 11,
+            BACKOFF_VAL: [0, 0, 0, 0, 0 ,0]
         },
         {
-            CHANNEL_NUMBER : 14,
-            BACKOFF_VAL : [0, 0, 0, 0, 0 ,0]
+            CHANNEL_NUMBER: [12, 13],
+            BACKOFF_VAL: [0, 0, 0, 0, 0 ,0]
+        },
+        {
+            CHANNEL_NUMBER: 14,
+            BACKOFF_VAL: [0, 0, 0, 0, 0 ,0]
         }
-    ],
-
-    RSSI_CORRECTION: 0
+    ]
 },
 
 /********************/
@@ -237,21 +230,19 @@ RF_POWER_CFG: {
 
 RF_ANTENNA_SEL_DIV_CFG: {
     //
-    // Antenna selection:
-    //   - TX1_RX1
-    //   - TX2_RX2
-    //   - TX1_RX2
-    //   - TX2_RX1
-    //   - TX12_RX12
+    // Antenna selection: allows to select the RF port used. Can be different for Tx and Rx (FEM case)
+    //   - TX1_RX1: RF_1 used (default)
+    //   - TX2_RX2: RF_2 used
+    //   - TX1_RX2: Tx on RF_1 and Rx on RF_2
+    //   - TX2_RX1: Tx on RF_2 and Rx on RF_1
+    //   - TX12_RX12: antenna diversity case: both Tx and Rx on the same RF port which is automatically selected (requires DIVERSITY to be set)
     //
     RF_PORTS: TX1_RX1,
 
     //
     // Diversity control mode:
-    //   - OFF
-    //   - INTERNAL
-    //   - EXTERNAL
-    // For the INTERNAL value, RF_PORTS must be set to TX12_RX12
+    //   - OFF (default)
+    //   - INTERNAL: requires RF_PORTS to be set to TX12_RX12
     //
-    DIVERSITY: OFF,
+    DIVERSITY: OFF
 },
